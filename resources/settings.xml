@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+  <category label="General Settings">
+    <setting label="www.digi-online.hu login" type="lsep"/>
+    <setting label="Login User"        id="login_User"     type="text" default="testUser@rdslink.ro" />
+    <setting label="Login Password"    id="login_Password" type="text" default="testPassword"  option="hidden" />
+    <setting type="sep"/>
+    <setting label="Playback" type="lsep"/>
+    <setting label="OSD Info Popup" id="popup_Enabled" type="bool" default="true" />
+    <setting type="sep"/>
+  </category>
+  <category label="Debug Options">
+    <setting label="Log File: plugin_video_digi.hu-online.log" type="lsep"/>
+    <setting label="Enable debug" id="debug_Enabled" type="bool" default="false" />
+    <setting type="sep"/>
+  </category>
+</settings>
