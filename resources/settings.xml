@@ -2,7 +2,7 @@
 <settings>
   <category label="General Settings">
     <setting label="www.digi-online.hu login" type="lsep"/>
-    <setting label="Login User"        id="login_User"     type="text" default="testUser@rdslink.ro" />
+    <setting label="Login User"        id="login_User"     type="text" default="testUser@test.dom" />
     <setting label="Login Password"    id="login_Password" type="text" default="testPassword"  option="hidden" />
     <setting type="sep"/>
     <setting label="Playback" type="lsep"/>
