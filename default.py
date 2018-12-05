@@ -17,9 +17,8 @@ import xbmcaddon
 import xbmcgui
 import xbmcplugin
 import time
-#import socket, ssl
 import requests
-
+import threading
 
 ## Settings
 settings = xbmcaddon.Addon(id='plugin.video.digi.hu-online')
@@ -33,9 +32,6 @@ digiHost = 'online.digi.hu'
 wwwebURL = 'http://digionline.hu'
 loginURL = 'http://digionline.hu/login'
 userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15'
-
-conn_type = 'close'
-#conn_type = 'keep-alive'
 
 log_File = os.path.join(settings.getAddonInfo('path'), 'resources', 'plugin_video_digi.hu-online.log')
 html_f_1 = os.path.join(settings.getAddonInfo('path'), 'resources', str(mainHost) + '_1.html')
@@ -80,7 +76,7 @@ def ROOT():
   addDir('Duna HD', 'http://digionline.hu/player/43', setIcon('duna-hd.png'))
   addDir('Duna World', 'http://digionline.hu/player/44', setIcon('duna-world-hd.png'))
   addDir('M1 HD', 'http://digionline.hu/player/39', setIcon('m1-hd.png'))
-  addDir('M2 HD', 'http://digionline.hu/player/42', setIcon('m2-hd.png'))
+  addDir('M2 HD', 'http://digionline.hu/player/40', setIcon('m2-hd.png'))
   addDir('M5 HD', 'http://digionline.hu/player/132', setIcon('m5-hd.png'))
 
   addDir('Spektrum', 'http://digionline.hu/player/130', setIcon('spektrum.png'))
@@ -96,18 +92,15 @@ def ROOT():
   addDir('History Channel', 'http://digionline.hu/player/45', setIcon('history.png'))
   addDir('Viasat History', 'http://digionline.hu/player/4', setIcon('viasat-history.png'))
   addDir('Viasat Nature', 'http://digionline.hu/player/21', setIcon('viasat-nature.png'))
-
   ## Kidz
   addDir('Nickelodeon', 'http://digionline.hu/player/207', setIcon('nickelodeon.png'))
   addDir('Minimax', 'http://digionline.hu/player/226', setIcon('minimax-c8.png'))
   addDir('Kiwi TV', 'http://digionline.hu/player/213', setIcon('kiwi-tv.png'))
-
   ## Music
   addDir('Hit Music Channel', 'http://digionline.hu/player/2', setIcon('h-t-music-channel.png'))
   addDir('Music Channel', 'http://digionline.hu/player/5', setIcon('music-channel.png'))
   addDir('MTV Hungary', 'http://digionline.hu/player/228', setIcon('mtv-europe.png'))
   addDir('Zenebutik', 'http://digionline.hu/player/216', setIcon('zenebutik.png'))
-
   ## Sport
   addDir('M4 Sport', 'http://digionline.hu/player/41', setIcon('m4-sport-hd.png'))
   addDir('Digi Sport 1', 'http://digionline.hu/player/26', setIcon('digi-sport-1-hd.png'))
@@ -161,21 +154,25 @@ def getParams():
 ## Load HTML, extract playlist URL & 'now playing' info
 def processHTML(url):
     global result
-    global nowPlaying_Info
-    global req
-    req = None
-    f = HTMLParser.HTMLParser()
-    url = f.unescape(url)
+    global nowPlayingInfo
+    global session
+    global theader
+
     match = None
     token = None
     link = None
+    session = None
+    req = None
+    html_text = None
+    sp_code = 404
 
-    write2file(log_File, "processHTML received URL: " + url, 'a', 1	, 0)
+    f = HTMLParser.HTMLParser()
+    url = f.unescape(url)
+    write2file(log_File, "processHTML received URL: " + url, 'a', 1, 0)
     ################### Step 1 #########################
     ## Load login URL to acquire cookies
     headers = {
-      'Connection': conn_type,
-      #'Content-Length': '54',
+      'Connection': 'close',
       'Upgrade-Insecure-Requests': '1',
       'Referer': loginURL,
       'User-Agent': userAgent,
@@ -190,21 +187,22 @@ def processHTML(url):
 	  }
     try:
 	session = requests.Session()
+	#session.cookies.set_cookie(makeCookie("req_cookies", "1", mainHost))
 	req = session.get(loginURL, headers=headers)
 	log_http(loginURL, req, 'GET')
 	write2file(html_f_1, req.content, 'w', 0, 0)
-	## Get _token in order to add its value to the next HTTP Header
-	match = re.compile('name="_token" value="(.+?)"').findall(req.content)
-	write2file(log_File, "processHTML match: " + str(match[0]), 'a', 0, 0)
+	## add _token to HTTP Header
+	match = str(re.compile('name="_token" value="(.+?)"').findall(req.content)[0])
+	write2file(log_File, 'processHTML match: ' + match, 'a', 0, 0)
 
     except Exception as err:
-	write2file(log_File, "processHTML ERROR: could not fetch " + str(loginURL) + " - " + str(err), 'a', 0, 1)
+	write2file(log_File, 'processHTML ERROR: Could not fetch ' + str(loginURL) + " - " + str(err), 'a', 0, 1)
 	xbmcgui.Dialog().ok('Error', 'Could not fetch ' + str(loginURL) + " - " + str(err))
 
     ################### Step 2 #########################
     ## Login
     if match is not None and req.status_code == 200 :
-      xbmc.executebuiltin("Notification(Digi-Online.hu, " + nowPlayingTitle + ")")
+      xbmc.executebuiltin('Notification(Digi-Online.hu, ' + nowPlayingTitle + ')')
       headers = {
 	'Host': mainHost,
 	'Accept': '*/*',
@@ -213,12 +211,11 @@ def processHTML(url):
 	'Accept-Encoding': 'identity',
 	'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
 	'Origin': wwwebURL,
-	#'Content-Length': '54',
 	'User-Agent': userAgent,
 	'Referer': loginURL,
 	'DNT': '1',
-	'X-CSRF-TOKEN': str(match[0]),
-	'Connection': conn_type
+	'X-CSRF-TOKEN': match,
+	'Connection': 'close'
 	  }
       try:
 	  req = session.post(loginURL, headers=headers, data={'email': login_User, 'password': login_Password, 'accept': '1' })
@@ -227,29 +224,29 @@ def processHTML(url):
 	  write2file(html_f_2, req.content, 'w', 0, 0)
 
       except Exception as err:
+	write2file(log_File, 'processHTML ERROR: Could not perfom login: ' + str(err), 'a', 0, 1)
 	xbmcgui.Dialog().ok('Error', 'Could not perfom login: ' + str(err))
-	write2file(log_File, "processHTML ERROR: Could not perform login: " + str(err), 'a', 0, 1)
 
       if sp_code != 200:
-	    write2file(log_File, "processHTML ERROR: Could not perfom login: HTTP code: " + str(sp_code), 'a', 0, 1)
-	    xbmcgui.Dialog().ok('Error', 'Could not perfom login: HTTP code ' + str(sp_code))
+	    write2file(log_File, 'processHTML ERROR: Could not perfom login, HTTP code: ' + str(sp_code), 'a', 0, 1)
+	    xbmcgui.Dialog().ok('Error', 'Could not perfom login, HTTP code: ' + str(sp_code))
 
       else:
 	try:
-	  ## Check _token make sure we can go on
-	  token = re.compile('name="_token" value="(.+?)"').findall(req.content)
-	  write2file(log_File, "processHTML token: " + str(token[0]), 'a', 0, 0)
+	  ## Check _token
+	  token = str(re.compile('name="_token" value="(.+?)"').findall(req.content)[0])
+	  write2file(log_File, 'processHTML token: ' + token, 'a', 0, 0)
 
 	except Exception as err:
-	    write2file(log_File, "processHTML ERROR: Could not perform login: regex" + str(err), 'a', 0, 1)
-	    xbmcgui.Dialog().ok('Error', 'Could not perfom login: regex ' + str(err))
+	    write2file(log_File, 'processHTML ERROR: Could not login, regex error ' + str(err), 'a', 0, 1)
+	    xbmcgui.Dialog().ok('Error', 'Could not login, regex error ' + str(err))
 
     ################### Step 3 #########################
     ## Load URL
     if token is not None and sp_code == 200:
-      headers = {
+      theader = {
 	'Host': mainHost,
-	'Connection': conn_type,
+	'Connection': 'keep-alive',
 	'Upgrade-Insecure-Requests': '1',
 	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 	'User-Agent': userAgent,
@@ -258,48 +255,48 @@ def processHTML(url):
 	'Accept-Encoding': 'identity',
 	  }
       try:
-	  req = session.get(url, headers=headers)
-	  html_text_data_3 = req.content
+	  req = session.get(url, headers=theader)
+	  html_text = req.content
 	  log_http(url, req, 'GET')
 	  write2file(html_f_3, req.content, 'w', 0, 0)
 
 	  if req.status_code != 200:
-	      write2file(log_File, "processHTML ERROR: could not fetch " + str(url) + ", HTTP Code " + str(req.status_code), 'a', 0, 1)
+	      write2file(log_File, 'processHTML ERROR: Could not fetch ' + str(url) + ', HTTP Code ' + str(req.status_code), 'a', 0, 1)
 	      xbmcgui.Dialog().ok('Error', 'Could not fetch ' + str(url) + "\nHTTP code " + str(req.status_code))
 
       except:
-	  write2file(log_File, "processHTML ERROR: could not fetch " + str(url), 'a', 0, 1)
+	  write2file(log_File, 'processHTML ERROR: Could not fetch ' + str(url), 'a', 0, 1)
 	  xbmcgui.Dialog().ok('Error', 'Could not fetch ' + str(url))
 
       try:
 	  ## Extract 'now-playing' title
 	  if osdInfo_Enabled == "true":
-	    myInfo = re.compile('<div class="col-xs-10 col-sm-9 col-md-9 col-lg-9 program__program_name">\n[\s]+([őöüóúőéáűíŐÖÜÓÚŐÉÁŰÍA-Za-z0-9\t\s\-\)(`;:.!,]+)<\/div>').findall(html_text_data_3)
-	    nowPlaying_Info = str(myInfo[0].split("\n")[0])
-	    write2file(log_File, "processHTML nowPlayingTitle: " + nowPlaying_Info, 'a', 0, 0)
+	    myInfo = re.compile('<div class="col-xs-10 col-sm-9 col-md-9 col-lg-9 program__program_name">\n[\s]+([őöüóúőéáűíŐÖÜÓÚŐÉÁŰÍA-Za-z0-9\t\s\-\)(`;:.!,]+)<\/div>').findall(html_text)
+	    nowPlayingInfo = str(myInfo[0].split("\n")[0])
+	    write2file(log_File, 'processHTML nowPlayingTitle: ' + nowPlayingInfo, 'a', 0, 0)
 
       except:
-	    nowPlaying_Info = " - "
-	    write2file(log_File, "processHTML ERROR: could not detect nowPlaying_Info", 'a', 0, 1)
+	    nowPlayingInfo = " - "
+	    write2file(log_File, 'processHTML ERROR: could not detect nowPlayingInfo', 'a', 0, 1)
 
-      if req.status_code == 200:
+      if req.status_code == 200 and html_text is not None:
 	## Extract 'Restricted Access' warning, some channels require premium subscription
-	if re.compile('<div class="modal-body">Nem rendelkezik előfizetéssel az adás megtekintésére.<\/div>').findall(html_text_data_3):
-	  write2file(log_File, "processHTML Warning: Access Restricted (Nem rendelkezik ... blabla)", 'a', 0, 1)
+	if re.compile('<div class="modal-body">Nem rendelkezik előfizetéssel az adás megtekintésére.<\/div>').findall(html_text):
+	  write2file(log_File, 'processHTML Warning: Access Restricted (Nem rendelkezik ... blabla)', 'a', 0, 1)
 	  xbmcgui.Dialog().ok('Warning', 'Nem rendelkezik előfizetéssel az adás megtekintésére')
 
 	try:
-	    ## Search for the playlist in the returned HTML document
+	    ## Search for the playlist in HTML data
 	    ## e.g. createDefaultPlayer('http://online.digi.hu/api/streams/playlist/42/72cb73b6274e93e15b8e1d435f4ad235.m3u8',channel,'http://online.digi.hu/api/feedback','');
-	    regxp = re.compile('(http:\/\/[A-Za-z0-9.\/]+.m3u8)').findall(html_text_data_3)
+	    regxp = re.compile('(http:\/\/[A-Za-z0-9.\/]+.m3u8)').findall(html_text)
 	    link = str(regxp[0])
-	    write2file(log_File, "processHTML regxp: " + str(regxp), 'a', 0, 1)
+	    write2file(log_File, 'processHTML regxp: ' + str(regxp), 'a', 0, 1)
 
 	    if "http://" not in link:
 	      link = "".join(("http:", link))
 
 	except:
-	    write2file(log_File, "processHTML ERROR: could not detect playlist URL", 'a', 0, 1)
+	    write2file(log_File, 'processHTML ERROR: could not detect playlist URL', 'a', 0, 1)
 	    xbmcgui.Dialog().ok('Error', 'could not detect playlist URL')
 
 	################### Step 4 #########################
@@ -308,15 +305,14 @@ def processHTML(url):
 	  headers = {
 	    'Host': digiHost,
 	    'DNT': '1',
-	    #'X-Playback-Session-Id': '56AFC239-C047-44BC-868F-038B28C79F25',
 	    'Accept-Language': 'en-ie',
 	    'Upgrade-Insecure-Requests': '1',
 	    'Accept': '*/*',
 	    'User-Agent': userAgent,
 	    'Referer': wwwebURL,
 	    'Accept-Encoding': 'identity',
-	    'Connection': conn_type
-		}
+	    'Connection': 'close'
+	      }
 	  try:
 	      req = session.get(link, headers=headers)
 	      result = req.content
@@ -325,20 +321,21 @@ def processHTML(url):
 	      write2file(playlist, req.content, 'w', 0, 0)
 
 	  except:
-	      write2file(log_File, "processHTML ERROR: could not acquire playlist", 'a', 0, 1)
+	      write2file(log_File, 'processHTML ERROR: Could not acquire playlist', 'a', 0, 1)
 	      xbmcgui.Dialog().ok('Error', 'Could not acquire playlist')
 	      return False
 
       return link
 
 
+## Start player
 def parseInput(url):
     global result
     result = None
     item = None
 
     logMyVars()
-    write2file(log_File, "parseInput received URL: " + url, 'a', 0, 0)
+    write2file(log_File, 'parseInput received URL: ' + url, 'a', 0, 0)
     link = processHTML(url)
 
     ## Build ListItem
@@ -352,21 +349,50 @@ def parseInput(url):
 	  'playcount': '0'
 	}
 	item.setInfo('video', itemInfo)
-	if debug_Enabled == 'true':
-	  write2file(log_File, "parseInput link " + str(link) , 'a', 0, 0)
+	write2file(log_File, 'parseInput link ' + str(link) , 'a', 0, 0)
 
       except:
-	write2file(log_File, "parseInput: Could not access media", 'a', 0, 1)
+	write2file(log_File, 'parseInput ERROR: Could not access media', 'a', 0, 1)
 	xbmcgui.Dialog().ok('Error', 'Could not access media')
 
     ################### Step 5 #########################
     ## Play stream
     if item is not None and result is not None:
-      write2file(log_File, "xbmc.Player().play(" + link + "," + str(item) + ")", 'a', 0, 0)
       xbmcplugin.setContent(int(sys.argv[1]), 'movies')
       xbmc.Player().play(link, item)
+      write2file(log_File, "xbmc.Player().play(" + link + "," + str(item) + ")", 'a', 0, 1)
       if osdInfo_Enabled == "true":
-	xbmc.executebuiltin("Notification(" + nowPlayingTitle + ", " + nowPlaying_Info + ")")
+	xbmc.executebuiltin("Notification(" + nowPlayingTitle + ", " + nowPlayingInfo + ")")
+      ## Wait for Player to start playing
+      time.sleep(60)
+      pollingStart = threading.Thread(name='poll', target=bgPoll, args=(str(link), url,))
+      pollingStart.start()
+
+
+## maintain http session
+def bgPoll(lnk, url):
+      global session
+      cnt = 0
+      write2file(log_File, 'bgPoll start, link: ' + lnk, 'a', 1, 0)
+      while True:
+	try:
+	  pf = str(xbmc.Player().getPlayingFile())
+	except:
+	  pf = ""
+
+	if(xbmc.Player().isPlaying() and (lnk == pf) and (pf != "")):
+	    cnt+=1
+	    time.sleep(1)
+	    if cnt == 60:
+	      cnt = 0
+	      try:
+		  get = session.get(url, headers=theader)
+		  write2file(log_File, str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())) + ' bgPoll: GET ' + str(url), 'a', 0, 1)
+	      except:
+		  write2file(log_File, 'bgPoll ERROR: could not fetch ' + str(url), 'a', 1, 1)
+	else:
+	  write2file(log_File, 'isPlaying: ' + str(xbmc.Player().isPlaying()), 'a', 0, 0)
+	  break
 
 
 ## Debug
@@ -393,6 +419,7 @@ def log_http(link, session, method):
     text = text + "processHTML cookie: " + str(cookie.__dict__) + '\n'
   write2file(log_File, text, 'a', 0, 1)
 
+
 ## Blabla & cleanup
 def logMyVars():
   if debug_Enabled == "true":
@@ -413,15 +440,15 @@ def logMyVars():
     except:
       xbmcgui.Dialog().ok('Error', 'Could not clean logs')
 
+
 ####################################################
 #### RUN Addon ###
-
-logMyVars()
 params = getParams()
 url = None
 nowPlayingThumb = None
 nowPlayingTitle = None
-nowPlaying_Info = None
+nowPlayingInfo = None
+logMyVars()
 
 try:
     url = urllib.unquote_plus(params["url"])
