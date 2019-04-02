@@ -17,7 +17,6 @@ import xbmcaddon
 import xbmcgui
 import xbmcplugin
 import time
-#import socket, ssl
 import requests
 
 

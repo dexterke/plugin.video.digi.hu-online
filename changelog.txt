@@ -1,5 +1,8 @@
-v 0.1.1
+v 0.1.2
   - Apr.2019: Updated URLs, changed from 'http://' to 'https://'
+
+v 0.1.1
+  - Bugfix, added http session bg poller
 
 v 0.1.0
   - Nov.2018: First release.
