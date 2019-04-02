@@ -1,7 +1,6 @@
 v 0.1.1
-  - Dec.2018: Bugfix
-    Added backround polling thread to keep the http session alive
-    Code cleanup
+  - Apr.2019: Updated URLs, changed from 'http://' to 'https://'
+
 v 0.1.0
   - Nov.2018: First release.
     'AMC', 'http://digionline.hu/player/42'
