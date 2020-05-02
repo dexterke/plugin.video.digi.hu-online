@@ -115,7 +115,6 @@ def ROOT():
   addDir('Nickelodeon', 'https://digionline.hu/player/281', setIcon('nickelodeon.png'))
   addDir('Minimax', 'https://digionline.hu/player/270', setIcon('minimax-c8.png'))
   addDir('Kiwi TV', 'https://digionline.hu/player/264', setIcon('kiwi-tv.png'))
-  # 'M2' could be here
 
   ## Music
   addDir('Hit Music Channel', 'https://digionline.hu/player/260', setIcon('h-t-music-channel.png'))
@@ -134,7 +133,7 @@ def ROOT():
   addDir('Eurosport 2', 'https://digionline.hu/player/256', setIcon('eurosport-2-hd.png'))
   addDir('SPORT1', 'https://digionline.hu/player/289', setIcon('sport1.png'))
   addDir('SPORT2', 'https://digionline.hu/player/290', setIcon('sport2.png'))
-  addDir('The Fishing & Hunting', 'https://digionline.hu/player/292', setIcon('the-fishing-amp-hunting-hd.jpg'))
+  addDir('Fishing & Hunting', 'https://digionline.hu/player/292', setIcon('the-fishing-amp-hunting-hd.jpg'))
 
 
 def addDir(name, url, iconimage):
