@@ -1,3 +1,60 @@
+v 0.1.4
+  Updated channel list
+    AMC
+    Cool TV
+    Paramount Channel
+    FEM
+    Film +
+    Mozi +
+    PRIME
+    Comedy Central
+    Humor +
+    Izaura TV
+    Sorozat +
+    Film Now
+    RTL Gold
+    RTL Spike
+    RTL II
+    RTL +
+    SuperTV2
+    TV2 HD
+    Duna HD
+    Duna World
+    M1 HD
+    M2 HD
+    M5 HD
+    Spektrum
+    Digi Life
+    Digi World
+    TLC
+    TV Paprika
+    Lichi TV
+    Discovery Channel 
+    Nat. Geographic
+    Nat. Geo. Wild
+    Digi Animal World
+    History Channel
+    Viasat History
+    Viasat Nature
+    Nickelodeon
+    Minimax
+    Kiwi TV
+    Hit Music Channel
+    Music Channel
+    MTV Hungary
+    Zenebutik
+    Sláger TV
+    Muzsika TV
+    M4 Sport
+    Digi Sport 1
+    Digi Sport 2
+    Digi Sport 3
+    Eurosport 1
+    Eurosport 2
+    SPORT1
+    SPORT2
+    Fishing & Hunting
+
 v 0.1.3
   - May.2019: 
     Added bgpoll function (HTTP session keepalive after playback started)
