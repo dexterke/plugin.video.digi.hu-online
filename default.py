@@ -73,8 +73,8 @@ def setIcon(thumb_file):
 
 def ROOT():
   addDir('AMC', 'https://digionline.hu/player/243', setIcon('amc.png'))
-  addDir('Cool TV', 'https://digionline.hu/player/245', setIcon('cool-tv.png'))
-  addDir('Paramount Channel', 'https://digionline.hu/player/282', setIcon('paramount-channel.png'))
+  addDir('AXN', 'https://digionline.hu/player/313', setIcon('axn.png'))
+  addDir('Paramount Network', 'https://digionline.hu/player/310', setIcon('paramount-network.png'))
   addDir('FEM', 'https://digionline.hu/player/257', setIcon('fem3.png'))
   addDir('Film +', 'https://digionline.hu/player/259', setIcon('film.png'))
   addDir('Mozi +', 'https://digionline.hu/player/271', setIcon('mozi.png'))
@@ -110,6 +110,8 @@ def ROOT():
   addDir('History Channel', 'https://digionline.hu/player/261', setIcon('history.png'))
   addDir('Viasat History', 'https://digionline.hu/player/298', setIcon('viasat-history.png'))
   addDir('Viasat Nature', 'https://digionline.hu/player/299', setIcon('viasat-nature.png'))
+  addDir('SONY MAX', 'https://digionline.hu/player/317', setIcon('https://online.digi.hu/cache/api/programs/sony-max.png'))	
+  addDir('Viasat 3', 'https://digionline.hu/player/318', setIcon('https://online.digi.hu/cache/api/programs/viasat3.png'))
 
   ## Kidz
   addDir('Nickelodeon', 'https://digionline.hu/player/281', setIcon('nickelodeon.png'))
