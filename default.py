@@ -45,9 +45,7 @@ playlist   = os.path.join(cfg_dir, 'playList.m3u8')
 playFile   = os.path.join(cfg_dir, 'playFile.url')
 epochTst   = os.path.join(cfg_dir, 'epoch.txt')
 
-search_thumb = os.path.join(settings.getAddonInfo('path'), 'resources', 'media', 'search.png')
-movies_thumb = os.path.join(settings.getAddonInfo('path'), 'resources', 'media', 'movies.png')
-next_thumb = os.path.join(settings.getAddonInfo('path'), 'resources', 'media', 'next.png')
+default_thumb = os.path.join(settings.getAddonInfo('path'), 'resources', 'media', 'tv.png')
 addon_thumb = os.path.join(settings.getAddonInfo('path'), 'icon.png')
 addon_fanart = os.path.join(settings.getAddonInfo('path'), 'fanart.jpg')
 header = {
@@ -67,84 +65,75 @@ def setIcon(thumb_file):
   try:
     thumb_file_name = os.path.join(settings.getAddonInfo('path'), 'resources', 'media', thumb_file)
   except:
-    thumb_file_name = movies_thumb
+    thumb_file_name = default_thumb
   return thumb_file_name
 
 
-def ROOT():
-  addDir('AMC', 'https://digionline.hu/player/243', setIcon('amc.png'))
-  addDir('AXN', 'https://digionline.hu/player/313', setIcon('axn.png'))
-  addDir('Paramount Network', 'https://digionline.hu/player/310', setIcon('paramount-network.png'))
-  addDir('FEM', 'https://digionline.hu/player/257', setIcon('fem3.png'))
-  addDir('Film +', 'https://digionline.hu/player/259', setIcon('film.png'))
-  addDir('Mozi +', 'https://digionline.hu/player/271', setIcon('mozi.png'))
-  addDir('PRIME', 'https://digionline.hu/player/284', setIcon('prime.png'))
-  addDir('Comedy Central', 'https://digionline.hu/player/244', setIcon('comedy-central.png'))
-  addDir('Humor +', 'https://digionline.hu/player/262', setIcon('humor.png'))
-  addDir('Izaura TV', 'https://digionline.hu/player/263', setIcon('izaura.png'))
-  addDir('Sorozat +', 'https://digionline.hu/player/301', setIcon('sorozat.png'))
-  addDir('Film Now', 'https://digionline.hu/player/258', setIcon('film-now.png'))
-
-  addDir('RTL Gold', 'https://digionline.hu/player/242', setIcon('rtl-gold.png'))
-  addDir('RTL Spike', 'https://digionline.hu/player/285', setIcon('rtl-spike.png'))
-  addDir('RTL II', 'https://digionline.hu/player/286', setIcon('rtlii.png'))
-  addDir('RTL +', 'https://digionline.hu/player/302', setIcon('rtlp.png'))
-  addDir('SuperTV2', 'https://digionline.hu/player/291', setIcon('supertv2.png'))
-  addDir('TV2 HD', 'https://digionline.hu/player/297', setIcon('tv2-hd.png'))
-  addDir('Duna HD', 'https://digionline.hu/player/253', setIcon('duna-hd.png'))
-  addDir('Duna World', 'https://digionline.hu/player/254', setIcon('duna-world-hd.png'))
-  addDir('M1 HD', 'https://digionline.hu/player/266', setIcon('m1-hd.png'))
-  addDir('M2 HD', 'https://digionline.hu/player/267', setIcon('m2-hd.png'))
-  addDir('M5 HD', 'https://digionline.hu/player/269', setIcon('m5-hd.png'))
-
-  addDir('Spektrum', 'https://digionline.hu/player/288', setIcon('spektrum.png'))
-  addDir('Digi Life', 'https://digionline.hu/player/247', setIcon('digi-life.png'))
-  addDir('Digi World', 'https://digionline.hu/player/251', setIcon('digi-world.png'))
-  addDir('TLC', 'https://digionline.hu/player/295', setIcon('tlc.png'))
-  addDir('TV Paprika', 'https://digionline.hu/player/296', setIcon('tv-paprika.png'))
-  addDir('Lichi TV', 'https://digionline.hu/player/265', setIcon('lichi-tv.png'))
-  addDir('Discovery Channel ', 'https://digionline.hu/player/252', setIcon('discovery-channel.png'))
-  addDir('Nat. Geographic', 'https://digionline.hu/player/276', setIcon('nat-geo-hd.png'))
-  addDir('Nat. Geo. Wild', 'https://digionline.hu/player/278', setIcon('nat-geo-wild-hd.png'))
-  addDir('Digi Animal World', 'https://digionline.hu/player/246', setIcon('digi-animal-world.png'))
-  addDir('History Channel', 'https://digionline.hu/player/261', setIcon('history.png'))
-  addDir('Viasat History', 'https://digionline.hu/player/298', setIcon('viasat-history.png'))
-  addDir('Viasat Nature', 'https://digionline.hu/player/299', setIcon('viasat-nature.png'))
-  addDir('SONY MAX', 'https://digionline.hu/player/317', setIcon('https://online.digi.hu/cache/api/programs/sony-max.png'))	
-  addDir('Viasat 3', 'https://digionline.hu/player/318', setIcon('https://online.digi.hu/cache/api/programs/viasat3.png'))
-
-  ## Kidz
-  addDir('Nickelodeon', 'https://digionline.hu/player/281', setIcon('nickelodeon.png'))
-  addDir('Minimax', 'https://digionline.hu/player/270', setIcon('minimax-c8.png'))
-  addDir('Kiwi TV', 'https://digionline.hu/player/264', setIcon('kiwi-tv.png'))
-
-  ## Music
-  addDir('Hit Music Channel', 'https://digionline.hu/player/260', setIcon('h-t-music-channel.png'))
-  addDir('Music Channel', 'https://digionline.hu/player/274', setIcon('music-channel.png'))
-  addDir('MTV Hungary', 'https://digionline.hu/player/272', setIcon('mtv-europe.png'))
-  addDir('Zenebutik', 'https://digionline.hu/player/300', setIcon('zenebutik.png'))
-  addDir('Sláger TV', 'https://digionline.hu/player/287', setIcon('slager-tv.jpg'))
-  addDir('Muzsika TV', 'https://digionline.hu/player/275', setIcon('muzsika-tv.png'))
-
-  ## Sport
-  addDir('M4 Sport', 'https://digionline.hu/player/268', setIcon('m4-sport-hd.png'))
-  addDir('Digi Sport 1', 'https://digionline.hu/player/248', setIcon('digi-sport-1-hd.png'))
-  addDir('Digi Sport 2', 'https://digionline.hu/player/249', setIcon('digi-sport-2-hd.png'))
-  addDir('Digi Sport 3', 'https://digionline.hu/player/250', setIcon('digi-sport-3-hd.png'))
-  addDir('Eurosport 1', 'https://digionline.hu/player/255', setIcon('eurosport-hd.png'))
-  addDir('Eurosport 2', 'https://digionline.hu/player/256', setIcon('eurosport-2-hd.png'))
-  addDir('SPORT1', 'https://digionline.hu/player/289', setIcon('sport1.png'))
-  addDir('SPORT2', 'https://digionline.hu/player/290', setIcon('sport2.png'))
-  addDir('Fishing & Hunting', 'https://digionline.hu/player/292', setIcon('the-fishing-amp-hunting-hd.jpg'))
+def show_root():
+    add_dir('AMC', 'https://digionline.hu/player/243', setIcon('amc.png'))
+    add_dir('AXN', 'https://digionline.hu/player/313', setIcon('axn.png'))
+    add_dir('CBS Reality', 'https://digionline.hu/player/314', setIcon('cbs-reality.png'))
+    add_dir('Comedy Central', 'https://digionline.hu/player/244', setIcon('comedy-central.png'))
+    add_dir('DIGI Animal World', 'https://digionline.hu/player/246', setIcon('digi-animal-world.png'))
+    add_dir('DIGI Life', 'https://digionline.hu/player/247', setIcon('digi-life.png'))
+    add_dir('DIGI Sport 1', 'https://digionline.hu/player/248', setIcon('digi-sport-1-hd.png'))
+    add_dir('DIGI Sport 2', 'https://digionline.hu/player/249', setIcon('digi-sport-2-hd.png'))
+    add_dir('DIGI Sport 3', 'https://digionline.hu/player/250', setIcon('digi-sport-3-hd.png'))
+    add_dir('DIGI World', 'https://digionline.hu/player/251', setIcon('digi-world.png'))
+    add_dir('Discovery Channel', 'https://digionline.hu/player/252', setIcon('discovery-channel.png'))
+    add_dir('Duna', 'https://digionline.hu/player/253', setIcon('duna-hd.png'))
+    add_dir('Duna World', 'https://digionline.hu/player/254', setIcon('duna-world-hd.png'))
+    add_dir('Eurosport', 'https://digionline.hu/player/255', setIcon('eurosport-hd.png'))
+    add_dir('Eurosport 2', 'https://digionline.hu/player/256', setIcon('eurosport-2-hd.png'))
+    add_dir('FEM3', 'https://digionline.hu/player/257', setIcon('fem3.png'))
+    add_dir('Film Café', 'https://digionline.hu/player/312', setIcon('film-cafe.png'))
+    add_dir('Film Now', 'https://digionline.hu/player/258', setIcon('film-now.png'))
+    add_dir('FILM4', 'https://digionline.hu/player/315', setIcon('film4.png'))
+    add_dir('H!T Music Channel', 'https://digionline.hu/player/260', setIcon('h-t-music-channel.png'))
+    add_dir('HISTORY', 'https://digionline.hu/player/261', setIcon('history.png'))
+    add_dir('Izaura', 'https://digionline.hu/player/263', setIcon('izaura.png'))
+    add_dir('JimJam', 'https://digionline.hu/player/307', setIcon('jimjam.png'))
+    add_dir('M1', 'https://digionline.hu/player/266', setIcon('m1-hd.png'))
+    add_dir('M2', 'https://digionline.hu/player/267', setIcon('m2-hd.png'))
+    add_dir('M4 Sport', 'https://digionline.hu/player/268', setIcon('m4-sport-hd.png'))
+    add_dir('M5', 'https://digionline.hu/player/269', setIcon('m5-hd.png'))
+    add_dir('Minimax', 'https://digionline.hu/player/270', setIcon('minimax-c8.png'))
+    add_dir('Mozi+', 'https://digionline.hu/player/271', setIcon('mozi.png'))
+    add_dir('MTV Hungary', 'https://digionline.hu/player/272', setIcon('mtv-europe.png'))
+    add_dir('Music Channel', 'https://digionline.hu/player/274', setIcon('music-channel.png'))
+    add_dir('Nat Geo', 'https://digionline.hu/player/276', setIcon('nat-geo-hd.png'))
+    add_dir('Nat Geo WILD', 'https://digionline.hu/player/278', setIcon('nat-geo-wild-hd.png'))
+    add_dir('Nick Jr.', 'https://digionline.hu/player/316', setIcon('nick-jr.png'))
+    add_dir('Nickelodeon', 'https://digionline.hu/player/281', setIcon('nickelodeon.png'))
+    add_dir('Paramount Network', 'https://digionline.hu/player/310', setIcon('paramount-channel.png'))
+    add_dir('PRIME', 'https://digionline.hu/player/284', setIcon('prime.png'))
+    add_dir('Sláger TV', 'https://digionline.hu/player/287', setIcon('slager-tv.jpg'))
+    add_dir('SONY MAX', 'https://digionline.hu/player/317', setIcon('sony-max.png'))
+    add_dir('Spektrum', 'https://digionline.hu/player/288', setIcon('spektrum.png'))
+    add_dir('SPORT1', 'https://digionline.hu/player/289', setIcon('sport1.png'))
+    add_dir('SPORT2', 'https://digionline.hu/player/290', setIcon('sport2.png'))
+    add_dir('SuperTV2', 'https://digionline.hu/player/291', setIcon('supertv2.png'))
+    add_dir('TeenNick', 'https://digionline.hu/player/319', setIcon('teennick.png'))
+    add_dir('The Fishing & Hunting', 'https://digionline.hu/player/303', setIcon('the-fishing-amp-hunting-hd.jpg'))
+    add_dir('TLC', 'https://digionline.hu/player/295', setIcon('tlc.png'))
+    add_dir('TV Paprika', 'https://digionline.hu/player/296', setIcon('tv-paprika.png'))
+    add_dir('TV2', 'https://digionline.hu/player/297', setIcon('tv2-hd.png'))
+    add_dir('TV2 Comedy', 'https://digionline.hu/player/306', setIcon('tv2-comedy.png'))
+    add_dir('TV2 Kids', 'https://digionline.hu/player/308', setIcon('tv2-kids.png'))
+    add_dir('TV2 Séf', 'https://digionline.hu/player/309', setIcon('tv2-sef.png'))
+    add_dir('Viasat History', 'https://digionline.hu/player/298', setIcon('viasat-history.png'))
+    add_dir('Viasat Nature', 'https://digionline.hu/player/299', setIcon('viasat-nature.png'))
+    add_dir('VIASAT3', 'https://digionline.hu/player/318', setIcon('viasat3.png'))
+    add_dir('Zenebutik', 'https://digionline.hu/player/300', setIcon('zenebutik.png'))
 
 
-def addDir(name, url, iconimage):
+def add_dir(name, url, iconimage):
     iconimage = urllib.unquote(urllib.unquote(iconimage))
     u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&name=" + urllib.quote_plus(name) + "&thumb=" + urllib.quote_plus(iconimage)
-    listedItem = xbmcgui.ListItem(name, path=u, iconImage=movies_thumb, thumbnailImage=iconimage)
+    listedItem = xbmcgui.ListItem(name, path=u, iconImage=default_thumb, thumbnailImage=iconimage)
     listedItem.setInfo('video', {'type': 'video', 'mediatype': 'video', 'genre': 'Live Stream', 'title': name, 'playcount': '0'})
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=listedItem, isFolder=False)
-    write2file(log_File, "addDir: '" + name + "', '" + url + "', '" + iconimage, 'a', 0, 0, 0)
+    write2file(log_File, "add_dir: '" + name + "', '" + url + "', '" + iconimage, 'a', 0, 0, 0)
     ##
     return ok
 
@@ -503,10 +492,10 @@ except:
 try:
   nowPlayingThumb = urllib.unquote_plus(params["thumb"])
 except:
-  nowPlayingThumb = movies_thumb
+  nowPlayingThumb = default_thumb
 
 if url is None or len(url) < 1:
-  ROOT()
+  show_root()
 else:
   parseInput(url)
 

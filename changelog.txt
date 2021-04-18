@@ -1,3 +1,6 @@
+v 0.1.5
+  Updated channel list
+  
 v 0.1.4
   Updated channel list
     AMC
